@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class FollowTheSequenceScript : MonoBehaviour {
+public class NextInLine : MonoBehaviour {
 
     public KMBombInfo Bomb;
     public KMAudio Audio;
@@ -54,7 +54,7 @@ public class FollowTheSequenceScript : MonoBehaviour {
     void Start()
     {
         WireColorSetter();
-        Debug.LogFormat("[Follow The Sequence #{0}] At iteration {1}, the color is {2}. This is the first stage though. Cut it.", moduleId, Iteration + 2, ColorNames[CurrentColor]);
+        Debug.LogFormat("[Next In Line #{0}] At iteration {1}, the color is {2}. This is the first stage though. Cut it.", moduleId, Iteration + 2, ColorNames[CurrentColor]);
         PreviousColor = CurrentColor;
     }
 
@@ -70,6 +70,7 @@ public class FollowTheSequenceScript : MonoBehaviour {
         Streak = 0;
         Wire[0].gameObject.SetActive(false);
         Wire[1].gameObject.SetActive(true);
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, Wire[0].transform);
     }
 
     void WireColorSetter()
@@ -86,6 +87,7 @@ public class FollowTheSequenceScript : MonoBehaviour {
 
     IEnumerator HatchAnimation()
     {
+      Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
         for (int j = 0; j < 50; j++)
         {
             if (Open)
@@ -105,6 +107,7 @@ public class FollowTheSequenceScript : MonoBehaviour {
 
     void ButtonPress()
     {
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Button.transform);
         if (Animating || moduleSolved)
             return;
         if (Iteration == -1 && !ILikeYaCutG)
@@ -150,11 +153,11 @@ public class FollowTheSequenceScript : MonoBehaviour {
             Wire[0].gameObject.SetActive(true);
             Wire[1].gameObject.SetActive(false);
             StartCoroutine(HatchAnimation());
-            Debug.LogFormat("[Follow The Sequence #{0}] At iteration {1}, the color is {2}.", moduleId, Iteration + 2, ColorNames[CurrentColor]);
+            Debug.LogFormat("[Next In Line #{0}] At iteration {1}, the color is {2}.", moduleId, Iteration + 2, ColorNames[CurrentColor]);
             if (ColorOrder[PreviousColor][Iteration] == CurrentColor)
-                Debug.LogFormat("[Follow The Sequence #{0}] Cut it.", moduleId);
+                Debug.LogFormat("[Next In Line #{0}] Cut it.", moduleId);
             else
-                Debug.LogFormat("[Follow The Sequence #{0}] Don't cut it.", moduleId);
+                Debug.LogFormat("[Next In Line #{0}] Don't cut it.", moduleId);
             yield return new WaitForSecondsRealtime(1f);
         }
         if (!ILikeYaCutG && !Wrong)
