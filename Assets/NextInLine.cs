@@ -17,16 +17,17 @@ public class NextInLine : MonoBehaviour {
     private bool moduleSolved;
 
     int[][] ColorOrder = new int[8][] { //ROYGBKWA
-		new int[7] {4, 2, 1, 3, 6, 5, 7},
-        new int[7] {7, 0, 3, 6, 5, 2, 4},
-        new int[7] {1, 7, 4, 5, 3, 6, 0},
-        new int[7] {2, 4, 5, 7, 1, 0, 6},
-        new int[7] {0, 1, 6, 2, 7, 3, 5},
-        new int[7] {3, 6, 7, 1, 0, 4, 2},
-        new int[7] {5, 3, 2, 0, 4, 7, 1},
-        new int[7] {6, 5, 0, 4, 3, 1, 3}
+        //          0  1  2  3  4  5  6  7
+		    new int[7] {4, 2, 1, 3, 6, 5, 7}, // R
+        new int[7] {7, 0, 3, 6, 5, 2, 4}, // O
+        new int[7] {1, 7, 4, 5, 3, 6, 0}, // Y
+        new int[7] {2, 4, 5, 7, 1, 0, 6}, // G
+        new int[7] {0, 1, 6, 2, 7, 3, 5}, // B
+        new int[7] {3, 6, 7, 1, 0, 4, 2}, // K
+        new int[7] {5, 3, 2, 0, 4, 7, 1}, // W
+        new int[7] {6, 5, 0, 4, 2, 1, 3}  // A
     };
-    int[] StreakNumbers = { 37, 45, 52, 60, 67, 75, 82, 98 };
+    int[] StreakNumbers = { 37, 45, 52, 60, 67, 75, 82, 98};
     int CurrentColor;
     int PreviousColor;
     int Iteration = -1;
@@ -53,6 +54,7 @@ public class NextInLine : MonoBehaviour {
 
     void Start()
     {
+        CurrentColor = UnityEngine.Random.Range(0, 8);
         WireColorSetter();
         Debug.LogFormat("[Next In Line #{0}] At iteration {1}, the color is {2}. This is the first stage though. Cut it.", moduleId, Iteration + 2, ColorNames[CurrentColor]);
         PreviousColor = CurrentColor;

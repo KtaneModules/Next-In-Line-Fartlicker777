@@ -14,9 +14,9 @@ MonoBehaviour:
   id: NextInLine
   title: Next In Line
   author: me
-  description: "Unlike elementary school, cutting in line is allowed.\r\n\nModule
-    design by eXish.\n\nManual can be found at ktane.timwi.de\n\nIf there are any
-    bugs, contact Fartlicker777 on Discord."
+  description: "Unlike elementary school, cutting in line is allowed.\r\n\nCut a wire
+    based on the previously cut wire.\n\nModule design by eXish.\n\nManual can be
+    found at ktane.timwi.de\n\nIf there are any bugs, contact Fartlicker777 on Discord."
   version: 
   outputFolder: build
   previewImage: {fileID: 2800000, guid: d4caa7c59c1614041b8cdb1d8ae4614a, type: 3}
