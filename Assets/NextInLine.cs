@@ -90,6 +90,7 @@ public class NextInLine : MonoBehaviour {
     IEnumerator HatchAnimation()
     {
       Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
+        float t = 0f;
         for (int j = 0; j < 50; j++)
         {
             if (Open)
@@ -102,7 +103,12 @@ public class NextInLine : MonoBehaviour {
                 Hatch[0].transform.localPosition += new Vector3(0, 0.000592f, 0);
                 Hatch[1].transform.localPosition -= new Vector3(0, 0, 0.00088f);
             }
-            yield return new WaitForSecondsRealtime(0.01f);
+            while (t < 0.01f)
+            {
+                yield return null;
+                t += Time.deltaTime;
+            }
+            t = 0f;
         }
         Open = !Open;
     }
@@ -148,7 +154,13 @@ public class NextInLine : MonoBehaviour {
         else
             Iteration++;
         StartCoroutine(HatchAnimation());
-        yield return new WaitForSecondsRealtime(1f);
+        float t = 0f;
+        while (t < 1f)
+        {
+            yield return null;
+            t += Time.deltaTime;
+        }
+        t = 0f;
         if (!moduleSolved)
         {
             WireColorSetter();
@@ -160,7 +172,11 @@ public class NextInLine : MonoBehaviour {
                 Debug.LogFormat("[Next In Line #{0}] Cut it.", moduleId);
             else
                 Debug.LogFormat("[Next In Line #{0}] Don't cut it.", moduleId);
-            yield return new WaitForSecondsRealtime(1f);
+            while (t < 1f)
+            {
+                yield return null;
+                t += Time.deltaTime;
+            }
         }
         if (!ILikeYaCutG && !Wrong)
         {
