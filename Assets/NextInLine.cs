@@ -110,6 +110,16 @@ public class NextInLine : MonoBehaviour {
             }
             t = 0f;
         }
+        if (Open)
+        {
+            Hatch[0].transform.localPosition = new Vector3(0, -0.0198f, 0);
+            Hatch[1].transform.localPosition = new Vector3(0, 0.0042f, 0);
+        }
+        else
+        {
+            Hatch[0].transform.localPosition = new Vector3(0, 0.0098f, 0);
+            Hatch[1].transform.localPosition = new Vector3(0, 0.0042f, -0.044f);
+        }
         Open = !Open;
     }
 
