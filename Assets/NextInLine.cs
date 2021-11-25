@@ -5,6 +5,8 @@ public class NextInLine : MonoBehaviour {
 
    public KMBombInfo Bomb;
    public KMAudio Audio;
+   public KMColorblindMode Colorblind;
+   public TextMesh CBText;
    public GameObject[] Hatch;
    public KMSelectable Button;
    public KMSelectable WireSelectable;
@@ -33,18 +35,22 @@ public class NextInLine : MonoBehaviour {
    int Iteration = -1;
    int Streak;
 
-   string[] ColorNames = { "red", "orange", "yellow", "green", "blue", "black", "white", "grey" };
+   string[] ColorNames = { "red", "orange", "yellow", "green", "blue", "black", "white", "gray" };
+   string[] CBColorNames = { "R", "O", "Y", "G", "B", "K", "W", "A" };
 
    bool Active;
    bool Open;
    bool ILikeYaCutG;
    bool Wrong;
-   bool Animating;
+   bool Animating = true;
+   bool OneTime;
+   bool CB;
 
    void Awake () {
       for (int i = 0; i < LEDsGame.Length; i++)
          LEDsGame[i].SetActive(false);
       Wire[1].gameObject.SetActive(false);
+      CB = Colorblind.ColorblindModeActive;
       moduleId = moduleIdCounter++;
       Button.OnInteract += delegate () { ButtonPress(); return false; };
       WireSelectable.OnInteract += delegate () { WireCut(); return false; };
@@ -54,7 +60,7 @@ public class NextInLine : MonoBehaviour {
    #region Calculations
 
    void Start () {
-      CurrentColor = UnityEngine.Random.Range(0, 8);
+      CurrentColor = Random.Range(0, 8);
       WireColorSetter();
       Debug.LogFormat("[Next In Line #{0}] At iteration {1}, the color is {2}. This is the first stage though. Cut it.", moduleId, Iteration + 2, ColorNames[CurrentColor]);
       PreviousColor = CurrentColor;
@@ -66,6 +72,8 @@ public class NextInLine : MonoBehaviour {
    }
 
    void WireCut () {
+      if (Animating || moduleSolved)
+         return;
       ILikeYaCutG = true;
       Streak = 0;
       Wire[0].gameObject.SetActive(false);
@@ -78,10 +86,11 @@ public class NextInLine : MonoBehaviour {
          goto FirstStageSkip;
       if (ILikeYaCutG)
          PreviousColor = CurrentColor;
-      CurrentColor = UnityEngine.Random.Range(0, 100) <= StreakNumbers[Streak] ? ColorOrder[PreviousColor][Iteration] : UnityEngine.Random.Range(0, 8);
+      CurrentColor = Random.Range(0, 100) <= StreakNumbers[Streak] ? ColorOrder[PreviousColor][Iteration] : Random.Range(0, 8);
       FirstStageSkip:
       Wire[0].GetComponent<MeshRenderer>().material = Colors[CurrentColor];
       Wire[1].GetComponent<MeshRenderer>().material = Colors[CurrentColor];
+      CBText.text = CB ? CBColorNames[CurrentColor] : "";
    }
 
    IEnumerator StagePass () {
@@ -182,6 +191,11 @@ public class NextInLine : MonoBehaviour {
          Hatch[1].transform.localPosition = new Vector3(0, 0.0042f, -0.044f);
       }
       Open = !Open;
+      if (!OneTime)
+      {
+         OneTime = true;
+         Animating = false;
+      }
    }
 
    bool[] ShowingSegments (int Input) {
@@ -219,7 +233,7 @@ public class NextInLine : MonoBehaviour {
    #region TP
 
 #pragma warning disable 414
-   private readonly string TwitchHelpMessage = @"Use !{0} Cut to cut the wire. Use !{0} Next to press the button.";
+   private readonly string TwitchHelpMessage = @"Use !{0} Cut to cut the wire. Use !{0} Next to press the button. Use !{0} Colorblind to toggle colorblind mode.";
 #pragma warning restore 414
 
    IEnumerator ProcessTwitchCommand (string Command) {
@@ -231,6 +245,10 @@ public class NextInLine : MonoBehaviour {
       else if (Command == "NEXT") {
          Button.OnInteract();
       }
+      else if (Command == "COLORBLIND") {
+         CB = !CB;
+         CBText.text = CB ? CBColorNames[CurrentColor] : "";
+      }
       else {
          yield return "sendtochaterror I don't understand!";
       }
@@ -238,19 +256,12 @@ public class NextInLine : MonoBehaviour {
 
    IEnumerator TwitchHandleForcedSolve () {
       while (!moduleSolved) {
-         if (Iteration == -1) {
-            yield return ProcessTwitchCommand("Cut");
-            yield return new WaitForSecondsRealtime(0.1f);
-            yield return ProcessTwitchCommand("Next");
-            goto Weed;
-         }
-         else if (ColorOrder[PreviousColor][Iteration] == CurrentColor) {
+         while (Animating) yield return true;
+         if (Iteration == -1 || ColorOrder[PreviousColor][Iteration] == CurrentColor) {
             yield return ProcessTwitchCommand("Cut");
             yield return new WaitForSecondsRealtime(0.1f);
          }
          yield return ProcessTwitchCommand("Next");
-         Weed:
-         while (Animating) yield return true;
       }
    }
 
